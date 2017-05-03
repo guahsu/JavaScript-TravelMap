@@ -7,16 +7,14 @@
 
 body{
     font-family: 微軟正黑體;
-    color: #333;
     letter-spacing: 1px;
     margin: 0px;
+    background-color: #f4f7f6;
 }
 
 .container {
-    width: 1200px;
     padding-top: 380px;
     margin: auto;
-    border: solid 1px rgba(0, 0, 0, 0.1);
 }
 
 header {
@@ -29,12 +27,12 @@ header {
     background-color: #ddd;
 }
 
-header h1 {
+.header__h1 {
     color: #fff;
     top: 80px;
 }
 
-header select {
+.header__select {
     top: 130px;
     width: 300px;
     height: 50px;
@@ -43,8 +41,14 @@ header select {
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.24);
 }
 
-#content {
+.content {
     padding: 0px 25px;
+}
+
+.content__title {
+    text-align: center;
+    margin-bottom: 50px;
+    
 }
 
 .hot-area {
@@ -58,7 +62,7 @@ header select {
     text-align: center;
 }
 
-.hot-area a {
+.hot-area__a {
     font-size: 18px;
     width: 150px;
     margin: 5px;
@@ -71,52 +75,81 @@ header select {
     text-decoration: none;
 }
 
-.area-title {
-    text-align: center;
-    margin-bottom: 50px;
-    
-}
-
 .box-area {
     text-align: center;
 }
 
 .info-box {
-    width: 500px;
+    width: 30%;
     margin: 15px 20px;
     display: inline-block;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    background-color: #fcfcfc;
+    /*box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);*/
 }
 
-.info-box .view-name {
+.info-box__top {    
+    height: 200px;
+    overflow:hidden;
+    
+}
+
+.info-box__img {
+    width: 100%;
+}
+
+.info-box__view-name {
     color: #fff;
     font-size: 24px;
     top: 150px;  
     left: 25px;  
     float: left;
+    position: absolute;
 }
 
-.info-box .area-name {
+.info-box__area-name {
     color: #fff;
     font-size: 18px;
     top: 156px;
     right: 25px;
     float: right;
+    position: absolute;
 }
 
-.info-top {    
-    height: 200px;
-}
 
-.info-bottom {
+.info-box__bottom {
     padding: 20px;
 }
 
-.info-bottom span{
+.info-box__span {
+    overflow : hidden;
+    text-overflow : ellipsis;
+    white-space : nowrap;
     text-align: left;
     display: block;
     padding: 3px;
 }
+
+.paging {
+    text-align: center;
+}
+
+.paging__pages {
+    display: inline-block;
+    margin: 5px;
+}
+
+.paging__pages a {
+    color: unset;
+    padding: 20px;
+    line-height: 45px;
+}
+
+.paging__pages--active {
+    background-color: #333;
+    color: #fff;
+    border-radius: 100%;
+}
+
 
 footer {
     padding: 20px;

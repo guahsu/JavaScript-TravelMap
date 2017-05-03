@@ -12,39 +12,27 @@
 <body>
     <div class="container">
         <header>
-            <h1>新北市旅遊資訊</h1> 
-            <select id="select-area"></select>
+            <h1 class="header__h1">新北市旅遊資訊</h1> 
+            <select class="header__select" id="select-area"></select>
         </header>
-        <div id="content">
+        <div class="content">
             <div class="hot-area">
                 <h3>熱門行政區</h3>
-                <a href="#">汐止區</a>
-                <a href="#">金山區</a>
-                <a href="#">文山區</a>
-                <a href="#">內湖區</a>
+                <a class="hot-area__a " href="#">汐止區</a>
+                <a class="hot-area__a " href="#">金山區</a>
+                <a class="hot-area__a " href="#">文山區</a>
+                <a class="hot-area__a " href="#">內湖區</a>
             </div>
-            <H1 class="area-title"></H1>
-            <div class="box-area">
-                <!--<div class="info-box">
-                    <div class="info-top" style="background-image:url('http://tour.ntpc.gov.tw/Content/img/place_default.png');">
-                        <span class="view-name">石門峽</span>
-                        <span class="area-name">221</span>
-                    </div>
-                    <div class="info-bottom">
-                        <span class="time">全年開放</span>
-                        <span class="add">undefined</span>
-                        <span class="tel">886-2-264111 11</span>
-                    </div>
-                </div>-->
-            </div>
+            <H1 class="content__title"></H1>
+            <div class="box-area"></div>
+            <ul class="paging">
+            </ul>
         </div>
         <footer>
             <span class="copyright">Designed by GuaStudio.com 2017</span>
         </footer>
     </div>
     <script src="js/all.js"></script>
-    <!--JSONP
-    <script src="https://hexschool.github.io/ajaxHomework/data.json&callback=getViewData"></script>-->
 </body>
 
 </html>
