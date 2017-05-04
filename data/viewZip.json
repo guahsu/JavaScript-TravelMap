@@ -1,0 +1,14 @@
+[
+{ "District": "中正區", "zipcode": "100" },
+{ "District": "大同區", "zipcode": "103" },
+{ "District": "中山區", "zipcode": "104" },
+{ "District": "松山區", "zipcode": "105" },
+{ "District": "大安區", "zipcode": "106" },
+{ "District": "萬華區", "zipcode": "108" },
+{ "District": "信義區", "zipcode": "110" },
+{ "District": "士林區", "zipcode": "111" },
+{ "District": "北投區", "zipcode": "112" },
+{ "District": "內湖區", "zipcode": "114" },
+{ "District": "南港區", "zipcode": "115" },
+{ "District": "文山區", "zipcode": "116" }
+]
