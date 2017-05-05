@@ -1,27 +1,40 @@
+// 設定區
+var defaultZip = '104'; //預設行政區
+var defaultName = '中山區' //預設行政區
+var viewCardNum = 12; //每頁顯示的景點數量
+var noDataText = '未提供'; //無資料時顯示的文字
 
-// 組合行政區下拉選單
-var defaultZip = '116';
-var defaultName = '文山區'
+// 替換字元
+function replaceAll(str, find, replace) {
+  return str.replace(new RegExp(find, 'g'), replace);
+}
+
+// 取得JSON行政區
 function getViewZip() {
     var xhr = new XMLHttpRequest();
     xhr.open('get', 'data/viewZip.json');
     xhr.send(null);
     xhr.onload = function(){
         var zipData = JSON.parse(xhr.responseText);
-        var zipOption = '';
-        for (var index = 0; index < zipData.length; index++) {
-            var zipName = zipData[index].District;
-            var zipCode = zipData[index].zipcode;
-            //把預設行政區放到Option的最前面
-            if (zipName == defaultName) {
-                zipOption = '<option value="' + zipCode + '">' + zipName + '</option> ' + zipOption;
-            } else {
-                zipOption += '<option value="' + zipCode + '">' + zipName + '</option> ';
-            }
-        }
-        document.querySelector('.header__select').innerHTML = zipOption;
-        getViewData();
+        createViewZip(zipData);
     }
+}
+
+// 組合行政區下拉選單
+function createViewZip(zipData) {
+    var zipOption = '';
+    for (var index = 0; index < zipData.length; index++) {
+        var zipName = zipData[index].District;
+        var zipCode = zipData[index].zipcode;
+        //把預設行政區放到Option的最前面
+        if (zipName == defaultName) {
+            zipOption = '<option value="' + zipCode + '">' + zipName + '</option> ' + zipOption;
+        } else {
+            zipOption += '<option value="' + zipCode + '">' + zipName + '</option> ';
+        }
+    }
+    document.querySelector('.content__select').innerHTML = zipOption;
+    getViewData();
 }
 
 // 取得JSON景點資料
@@ -36,7 +49,6 @@ function getViewData() {
     }
 }
 
-
 // 設定景點資料
 var nowArea = '';
 var nowData = [];
@@ -46,41 +58,39 @@ function setViewData(selectZipName) {
         nowArea = selectZipName
         nowData = [];
         // 設定行政區大標題
-        document.querySelector('.content__title').textContent = '- ' + selectZipName + ' -';
+        // document.querySelector('.content__title').textContent = '- ' + selectZipName + ' -';
 
         // 取出行政區景點資料
         for (var index = 0; index < viewData.length; index++) {
-            var dataNo = viewData[index].RowNumber;
-            var dataZip = viewData[index].address.substr(5, 3);
-            var dataTitle = viewData[index].stitle;
-            var dataBody = viewData[index].xbody;
-            var dataMRT = viewData[index].MRT;
-            var dataInfo = viewData[index].info;
-            var dataOpenTime = viewData[index].MEMO_TIME;
-            var dataAddress = viewData[index].address;
-            var dataTel = viewData[index].MEMO_TEL;
-            var dataPic = '';
-            var dataPicDesc = '';
+            var dataNo = viewData[index].RowNumber || noDataText;
+            var dataZip = viewData[index].address.substr(5, 3) || noDataText;
+            var dataTitle = viewData[index].stitle || noDataText;
+            var dataBody = viewData[index].xbody || noDataText;
+            var dataMRT = viewData[index].MRT || noDataText;
+            var dataInfo = viewData[index].info || noDataText;
+            var dataOpenTime = viewData[index].MEMO_TIME || noDataText;
+            var dataAddress = viewData[index].address || noDataText;
+            var dataTel = viewData[index].MEMO_TEL || noDataText;
             // 圖片陣列處理，只取第一筆
             if (viewData[index].file.img.length === undefined) {
-                dataPic = viewData[index].file.img['#text'];
-                dataPicDesc = viewData[index].file.img['-description'];
+                var dataPic = viewData[index].file.img['#text'] || '';
+                var dataPicDesc = viewData[index].file.img['-description'] || noDataText;
             } else {
-                dataPic = viewData[index].file.img[0]['#text'];
-                dataPicDesc = viewData[index].file.img[0]['-description'];
+                var dataPic = viewData[index].file.img[0]['#text'] || '';
+                var dataPicDesc = viewData[index].file.img[0]['-description'] || noDataText;
             }
             // 放入暫存區
             if (dataZip == selectZipName) {
                 selectData = {
-                    'dataNo': dataNo == null ? '無提供':dataNo,
-                    'dataZip': dataZip == null ? '無提供':dataZip,
-                    'dataTitle': dataTitle == null ? '無提供':dataTitle,
-                    'dataBody': dataBody == null ? '無提供':replaceAll(dataBody,'。', '。<br />'),
-                    'dataMRT': dataMRT == null ? '無提供':dataMRT,
-                    'dataInfo': dataInfo == null ? '無提供':replaceAll(dataInfo,'。', '。<br />'),
-                    'dataOpenTime': dataOpenTime == null ? '無提供':replaceAll(dataOpenTime,/\n/g, '<br />'),
-                    'dataAddress': dataAddress == null ? '無提供':dataAddress,
-                    'dataTel': dataTel == null ? '無提供':dataTel,
+                    'dataNo': dataNo,
+                    'dataZip': dataZip,
+                    'dataTitle': dataTitle,
+                    'dataBody':dataBody,
+                    'dataMRT': dataMRT,
+                    'dataInfo':dataInfo,
+                    'dataOpenTime':dataOpenTime,
+                    'dataAddress': dataAddress,
+                    'dataTel': dataTel,
                     'dataPic': dataPic,
                     'dataPicDesc': dataPicDesc,
                 };
@@ -103,10 +113,10 @@ function createViewCard(pageNum) {
     var pagas = '';
     if (pageNum == 1) {
         var pageStart = 0;
-        var pageEnd = 9;
+        var pageEnd = viewCardNum;
     }else { 
-        var pageStart = parseInt(pageNum * 9 - 9 );
-        var pageEnd = parseInt(pageNum * 9);
+        var pageStart = parseInt(pageNum * viewCardNum - viewCardNum );
+        var pageEnd = parseInt(pageNum * viewCardNum);
     }
     for (var index = pageStart; index < pageEnd; index++) {
         //若到達最後一筆則跳出組合迴圈
@@ -129,40 +139,7 @@ function createViewCard(pageNum) {
         
     }
     document.querySelector('.box-area').innerHTML = infoBox;
-    //綁定景點介紹按鈕功能
     setReadMoreClick();
-}
-
-// 組合分頁按鈕
-function createPages(pageNum) {
-    var pagas = '';
-    var selectDataLenght = nowData.length;
-    var pageCount = Math.ceil(selectDataLenght/9);
-    if (pageCount > 1) {
-        for (var index = 0; index < pageCount; index++) {
-            setNum = parseInt(index + 1);
-            if (pageNum == setNum) {
-                pagas += '<li class="paging__pages paging__pages--active"><a href="#">' + setNum + '</a></li>';
-            }else {
-                pagas += '<li class="paging__pages"><a href="#' + nowArea + '-page-' + setNum + '">' + setNum + '</a></li>'; 
-            }           
-        }
-        document.querySelector('.paging').innerHTML = pagas;
-        //啟動監聽分頁按鈕
-        setPageClick()
-    }
-}
-
-
-// 綁定分頁按鈕功能
-function setPageClick() {
-    var pageEl = document.querySelectorAll('.paging__pages');
-    for (var index = 0; index < pageEl.length; index++) {
-        pageEl[index].addEventListener('click', function(e){ 
-            createViewCard(e.srcElement.textContent);
-            createPages(e.srcElement.textContent);
-        }, false);
-    }
 }
 
 // 綁定景點介紹按鈕功能
@@ -175,9 +152,41 @@ function setReadMoreClick() {
     }
 }
 
+// 組合分頁按鈕
+function createPages(pageNum) {
+    var pagas = '';
+    var selectDataLenght = nowData.length;
+    var pageCount = Math.ceil(selectDataLenght/viewCardNum);
+    if (pageCount > 1) {
+        for (var index = 0; index < pageCount; index++) {
+            setNum = parseInt(index + 1);
+            if (pageNum == setNum) {
+                pagas += '<li class="paging__pages paging__pages--active">' + setNum + '</li>';
+            }else {
+                pagas += '<li class="paging__pages">' + setNum + '</li>'; 
+            }           
+        }
+        document.querySelector('.paging').innerHTML = pagas;
+        //啟動監聽分頁按鈕
+        setPageClick()
+    }
+}
+
+// 綁定分頁按鈕功能
+function setPageClick() {
+    var pageEl = document.querySelectorAll('.paging__pages');
+    for (var index = 0; index < pageEl.length; index++) {
+        pageEl[index].addEventListener('click', function(e){ 
+            window.scrollTo(0, 300);
+            createViewCard(e.srcElement.textContent);
+            createPages(e.srcElement.textContent);
+        }, false);
+    }
+}
+
 // 切換行政區功能
 var selectZipName = '';
-var selectEl = document.querySelector('.header__select');
+var selectEl = document.querySelector('.content__select');
 selectEl.addEventListener('change', function(){ 
     selectZipName = selectEl.selectedOptions[0].text;
     setViewData(selectZipName) 
@@ -185,17 +194,17 @@ selectEl.addEventListener('change', function(){
 
 // 打開景點介紹內容
 function setViewContent(viewNo) {
-    console.log(viewNo);
     for (var index = 0; index < nowData.length; index++) {
-        console.log(nowData[index].dataNo);
         if (viewNo == nowData[index].dataNo) {
-            console.log(nowData[index].dataNo);
-            console.log(nowData[index].dataTitle);
             document.querySelector('.view-title').textContent = nowData[index].dataTitle;
             document.querySelector('.view-img').setAttribute('src', nowData[index].dataPic);
-            document.querySelector('.view-content').innerHTML = nowData[index].dataBody;
+            document.querySelector('.view-img').setAttribute('alt', nowData[index].dataPicDesc);
+            document.querySelector('.view-content').innerHTML = replaceAll(nowData[index].dataBody,'。', '。<br />');
+            document.querySelector('.view-add').innerHTML = nowData[index].dataAddress;
+            document.querySelector('.view-tel').innerHTML = nowData[index].dataTel;
+            document.querySelector('.view-time').innerHTML = replaceAll(nowData[index].dataOpenTime,/\n/g, '<br />');
             document.querySelector('.view-MRT').textContent = nowData[index].dataMRT;
-            document.querySelector('.view-info').innerHTML = nowData[index].dataInfo;
+            document.querySelector('.view-info').innerHTML = replaceAll(nowData[index].dataInfo,'。', '。<br />');
         }
     }
     document.querySelector('.modal').style.display='block';
@@ -208,10 +217,6 @@ closeModalEl.addEventListener('click', function(e){
         document.querySelector('.modal').style.display='none';
     }
 })
-
-function replaceAll(str, find, replace) {
-  return str.replace(new RegExp(find, 'g'), replace);
-}
 
 // 啟動
 window.onload = getViewZip();

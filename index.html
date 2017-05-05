@@ -12,23 +12,18 @@
 <body>
     <div class="container">
         <header class="container__header">
-            <h1 class="header__h1">台北市觀光景點資訊</h1>
-            <div></div>
-            <!--<h2 class="header__h2">Javascript & CSS 練習</h2> -->
-            <select class="header__select" id="select-area"></select>
+            <div class="header">
+                <p class="header__title">臺北市-觀光景點</p>
+                <p class="header__desc">Javascript & CSS 練習</p>   
+            </div>            
         </header>
-        <div class="content">
-            <div class="hot-area">
-                <h3>熱門行政區</h3>
-                <a class="hot-area__a" href="#">金山區</a>
-                <a class="hot-area__a" href="#">金山區</a>
-                <a class="hot-area__a" href="#">金山區</a>
-                <a class="hot-area__a" href="#">金山區</a>
-            </div>
-            <H1 class="content__title"></H1>
+        <div class="content">                         
+            <select class="content__select" id="select-area"></select>
+            <svg class="content__select--arrow">
+                <polygon fill="#42ab9e" points="5,10 0,0 10,0"></polygon>
+            </svg>
             <div class="box-area"></div>
-            <ul class="paging"></ul>
-
+            <div class="paging"></div>
             <div class="modal">
                 <div class="modal__container">
                     <header class="modal__header">
@@ -37,20 +32,22 @@
                     </header>
                     <div class="modal__body">
                         <img src="" alt="" class="modal__img view-img">
-                        <p class="view-content"></p>
-                        <p class="view-MRT"></p>
-                        <p class="view-info"></p>
+                        <p><b>景點介紹：</b><p><p class="view-content"></p>
+                        <p><b>地址：</b><span class="view-add"></span><p>                        
+                        <p><b>電話：</b><span class="view-tel"></span><p>
+                        <p><b>開放時間：</b><span class="view-time"></span><p>
+                        <p><b>鄰近捷運站：</b><span class="view-MRT"></span><p>
+                        <p><b>交通資訊：</b><p><p class="view-info"></p>
                     </div>
-                    <footer class="modal__footer">
-                        <p>Modal Footer</p>
-                    </footer>
+                    <footer class="modal__footer"></footer>
                 </div>
             </div>
 
 
         </div>
         <footer class="container__footer">
-            <span class="copyright">Designed by GuaStudio.com 2017</span>
+            <p class="copyright">資料來源:台北市政府資料開放平台</p>
+            <p class="copyright">Designed by GuaStudio.com 2017</p>
         </footer>
     </div>
     <script src="js/all.js"></script>
