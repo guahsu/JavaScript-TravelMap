@@ -1,7 +1,8 @@
+/*GuaHsu20170505*/
+
 // 設定區
-var defaultZip = '104'; //預設行政區
-var defaultName = '中山區' //預設行政區
-var viewCardNum = 12; //每頁顯示的景點數量
+var defaultArea = '中山區' //預設行政區
+var pageViewQty = 12; //每頁顯示的景點數量
 var noDataText = '未提供'; //無資料時顯示的文字
 
 // 替換字元
@@ -10,31 +11,16 @@ function replaceAll(str, find, replace) {
 }
 
 // 取得JSON行政區
-function getViewZip() {
+var areaData = '';
+function getAreaData() {
     var xhr = new XMLHttpRequest();
-    xhr.open('get', 'data/viewZip.json');
+    xhr.open('get', 'data/viewZip.json', true);
     xhr.send(null);
     xhr.onload = function(){
-        var zipData = JSON.parse(xhr.responseText);
-        createViewZip(zipData);
+        areaData = JSON.parse(xhr.responseText);   
+        //建立行政區下拉選單     
+        createAreaSelect();
     }
-}
-
-// 組合行政區下拉選單
-function createViewZip(zipData) {
-    var zipOption = '';
-    for (var index = 0; index < zipData.length; index++) {
-        var zipName = zipData[index].District;
-        var zipCode = zipData[index].zipcode;
-        //把預設行政區放到Option的最前面
-        if (zipName == defaultName) {
-            zipOption = '<option value="' + zipCode + '">' + zipName + '</option> ' + zipOption;
-        } else {
-            zipOption += '<option value="' + zipCode + '">' + zipName + '</option> ';
-        }
-    }
-    document.querySelector('.content__select').innerHTML = zipOption;
-    getViewData();
 }
 
 // 取得JSON景點資料
@@ -45,47 +31,63 @@ function getViewData() {
     xhr.send(null);
     xhr.onload = function(){    
         viewData = JSON.parse(xhr.responseText);
-        setViewData(defaultName);
+        //檢查是否有存在最後一筆紀錄
+        // console.log(localStorage.getItem('lastPage'));
+        var lastPage = JSON.parse(localStorage.getItem('lastPage'));
+        if (lastPage ){
+            selectArea(lastPage.areaName, lastPage.pageNo);
+        }else {
+            selectArea()
+        }
     }
 }
 
-// 設定景點資料
-var nowArea = '';
-var nowData = [];
-var nowDataLength = 0;
-function setViewData(selectZipName) {
-    if (nowArea != selectZipName) {
-        nowArea = selectZipName
-        nowData = [];
-        // 設定行政區大標題
-        // document.querySelector('.content__title').textContent = '- ' + selectZipName + ' -';
+// 組合行政區下拉選單
+function createAreaSelect() {
+    var areaOptions = '';
+    for (var i = 0; i < areaData.length; i++) {
+        var areaName = areaData[i].District;
+        var areaCode = areaData[i].areacode;
+        areaOptions += '<option value="' + areaCode + '">' + areaName + '</option> ';
+    }
+    document.querySelector('.content__select').innerHTML = areaOptions;
+}
 
+
+// 設定景點資料
+var nowAreaName = '';
+var nowViewData = [];
+var nowViewDataCnt = 0;
+function setViewData(areaName, pageNo) {
+    if (nowAreaName != areaName) {
+        nowAreaName = areaName
+        nowViewData = [];
         // 取出行政區景點資料
-        for (var index = 0; index < viewData.length; index++) {
-            var dataNo = viewData[index].RowNumber || noDataText;
-            var dataZip = viewData[index].address.substr(5, 3) || noDataText;
-            var dataTitle = viewData[index].stitle || noDataText;
-            var dataBody = viewData[index].xbody || noDataText;
-            var dataMRT = viewData[index].MRT || noDataText;
-            var dataInfo = viewData[index].info || noDataText;
-            var dataOpenTime = viewData[index].MEMO_TIME || noDataText;
-            var dataAddress = viewData[index].address || noDataText;
-            var dataTel = viewData[index].MEMO_TEL || noDataText;
+        for (var i = 0; i < viewData.length; i++) {
+            var dataNo = viewData[i].RowNumber || noDataText;
+            var dataAreaName = viewData[i].address.substr(5, 3) || noDataText;
+            var dataTitle = viewData[i].stitle || noDataText;
+            var dataDesc = viewData[i].xbody || noDataText;
+            var dataMRT = viewData[i].MRT || noDataText;
+            var dataInfo = viewData[i].info || noDataText;
+            var dataOpenTime = viewData[i].MEMO_TIME || noDataText;
+            var dataAddress = viewData[i].address || noDataText;
+            var dataTel = viewData[i].MEMO_TEL || noDataText;
             // 圖片陣列處理，只取第一筆
-            if (viewData[index].file.img.length === undefined) {
-                var dataPic = viewData[index].file.img['#text'] || '';
-                var dataPicDesc = viewData[index].file.img['-description'] || noDataText;
+            if (viewData[i].file.img.length === undefined) {
+                var dataPic = viewData[i].file.img['#text'] || '';
+                var dataPicDesc = viewData[i].file.img['-description'] || noDataText;
             } else {
-                var dataPic = viewData[index].file.img[0]['#text'] || '';
-                var dataPicDesc = viewData[index].file.img[0]['-description'] || noDataText;
+                var dataPic = viewData[i].file.img[0]['#text'] || '';
+                var dataPicDesc = viewData[i].file.img[0]['-description'] || noDataText;
             }
             // 放入暫存區
-            if (dataZip == selectZipName) {
-                selectData = {
+            if (dataAreaName == areaName) {
+                nowViewData.push({
                     'dataNo': dataNo,
-                    'dataZip': dataZip,
+                    'dataAreaName': dataAreaName,
                     'dataTitle': dataTitle,
-                    'dataBody':dataBody,
+                    'dataDesc':dataDesc,
                     'dataMRT': dataMRT,
                     'dataInfo':dataInfo,
                     'dataOpenTime':dataOpenTime,
@@ -93,118 +95,144 @@ function setViewData(selectZipName) {
                     'dataTel': dataTel,
                     'dataPic': dataPic,
                     'dataPicDesc': dataPicDesc,
-                };
-                nowData.push(selectData);
+                });
             }
-        }
-        
+        }        
         //計算目前資料筆數
-        nowDataLength = nowData.length;
-        //組出第一頁的景點卡
-        createViewCard(1);
-        //組出分頁按鈕
-        createPages(1);
-    }        
+        nowViewDataCnt = nowViewData.length;
+    }  
+    //檢查是否有傳入頁數
+    if (!pageNo) {
+        pageNo = '1';
+    }
+    //組出景點卡
+    createView(pageNo);
+    //組出分頁按鈕
+    createPaging(pageNo);
+    //變更選取框內容－for歷史紀錄用
+    document.querySelector('.content__select').selectedOptions[0].text = nowAreaName;   
 }
 
-// 組合景點資料卡
-function createViewCard(pageNum) {
-    var infoBox = '';
-    var pagas = '';
-    if (pageNum == 1) {
+// 建立景點
+function createView(pageNo) {
+    var viewBox = '';
+    if (pageNo == 1) {
         var pageStart = 0;
-        var pageEnd = viewCardNum;
+        var pageEnd = pageViewQty;
     }else { 
-        var pageStart = parseInt(pageNum * viewCardNum - viewCardNum );
-        var pageEnd = parseInt(pageNum * viewCardNum);
+        var pageStart = parseInt(pageNo * pageViewQty - pageViewQty );
+        var pageEnd = parseInt(pageNo * pageViewQty);
     }
-    for (var index = pageStart; index < pageEnd; index++) {
+    for (var i = pageStart; i < pageEnd; i++) {
         //若到達最後一筆則跳出組合迴圈
-        if (index == nowDataLength) {
+        if (i == nowViewDataCnt) {
             break;
         }
-        infoBox += '<div class="info-box">' +
+        viewBox += '<div class="info-box">' +
                     '<div class="info-box__top">' +
-                    '<img class="info-box__img" src="' + nowData[index].dataPic + '" alt="' + nowData[index].dataPicDesc + '">' +
-                    '<span class="info-box__view-name">' + nowData[index].dataTitle + '</span>' +
-                    '<span class="info-box__area-name">' + nowArea + '</span>' +
+                    '<img class="info-box__img" src="' + nowViewData[i].dataPic + '" alt="' + nowViewData[i].dataPicDesc + '">' +
+                    '<span class="info-box__view-name">' + nowViewData[i].dataTitle + '</span>' +
+                    '<span class="info-box__area-name">' + nowAreaName + '</span>' +
                     '</div>' +
                     '<div class="info-box__bottom">' +
-                    '<span class="info-box__span"><b>地址：</b>' + nowData[index].dataAddress + '</span>' +
-                    '<span class="info-box__span"><b>電話：</b>' + nowData[index].dataTel + '</span>' +
-                    '<span class="info-box__span"><b>時間：</b>' + nowData[index].dataOpenTime + '</span>' +                    
-                    '<button type="button" class="button button--readMore" data-viewNo="' + nowData[index].dataNo + '">景點介紹</span>' + 
+                    '<span class="info-box__span"><b>地址：</b>' + nowViewData[i].dataAddress + '</span>' +
+                    '<span class="info-box__span"><b>電話：</b>' + nowViewData[i].dataTel + '</span>' +
+                    '<span class="info-box__span"><b>時間：</b>' + nowViewData[i].dataOpenTime + '</span>' +                    
+                    '<button type="button" class="button button--readMore" data-viewNo="' + nowViewData[i].dataNo + '">景點介紹</span>' + 
                     '</div>' +
                     '</div>';
         
     }
-    document.querySelector('.box-area').innerHTML = infoBox;
-    setReadMoreClick();
+    document.querySelector('.box-area').innerHTML = viewBox;
+    setReadMoreButton();
 }
 
 // 綁定景點介紹按鈕功能
-function setReadMoreClick() {
-    var readMoreEl = document.querySelectorAll('.button--readMore');
-    for (var index = 0; index < readMoreEl.length; index++) {
-            readMoreEl[index].addEventListener('click', function(e){ 
-            setViewContent(e.srcElement.getAttribute('data-viewNo'));
-        }, false);
+function setReadMoreButton() {
+    var readMoreButton = document.querySelectorAll('.button--readMore');
+    for (var i = 0; i < readMoreButton.length; i++) {
+            readMoreButton[i].addEventListener('click', function(e) { 
+                showViewData(e.srcElement.getAttribute('data-viewNo'));
+            }, false);
     }
 }
 
 // 組合分頁按鈕
-function createPages(pageNum) {
-    var pagas = '';
-    var selectDataLenght = nowData.length;
-    var pageCount = Math.ceil(selectDataLenght/viewCardNum);
-    if (pageCount > 1) {
-        for (var index = 0; index < pageCount; index++) {
-            setNum = parseInt(index + 1);
-            if (pageNum == setNum) {
-                pagas += '<li class="paging__pages paging__pages--active">' + setNum + '</li>';
+function createPaging(pageNo) {
+    var page = '';
+    var pageCnt = Math.ceil(nowViewDataCnt/pageViewQty);
+    if (pageCnt > 1) {
+        for (var i = 0; i < pageCnt; i++) {
+            var setNo = parseInt(i + 1);
+            if (pageNo == setNo) {
+                page += '<li class="paging__pages paging__pages--active">' + setNo + '</li>';
             }else {
-                pagas += '<li class="paging__pages">' + setNum + '</li>'; 
+                page += '<li class="paging__pages">' + setNo + '</li>'; 
             }           
         }
-        document.querySelector('.paging').innerHTML = pagas;
+        document.querySelector('.paging').innerHTML = page;
         //啟動監聽分頁按鈕
-        setPageClick()
+        setPageButton()
     }
 }
 
 // 綁定分頁按鈕功能
-function setPageClick() {
+function setPageButton() {
     var pageEl = document.querySelectorAll('.paging__pages');
-    for (var index = 0; index < pageEl.length; index++) {
-        pageEl[index].addEventListener('click', function(e){ 
+    for (var i = 0; i < pageEl.length; i++) {
+        pageEl[i].addEventListener('click', function(e) { 
+            pageNo = e.srcElement.textContent;
             window.scrollTo(0, 300);
-            createViewCard(e.srcElement.textContent);
-            createPages(e.srcElement.textContent);
+            setHistory(nowAreaName, pageNo);
+            createView(pageNo);
+            createPaging(pageNo);
         }, false);
     }
 }
 
-// 切換行政區功能
-var selectZipName = '';
-var selectEl = document.querySelector('.content__select');
-selectEl.addEventListener('change', function(){ 
-    selectZipName = selectEl.selectedOptions[0].text;
-    setViewData(selectZipName) 
-}, false);
+// 選擇行政區功能
+function selectArea(areaName, pageNo) {
+    if (!pageNo) {
+        pageNo = 1;        
+        areaName = document.querySelector('.content__select').selectedOptions[0].text;
+        setHistory(areaName, pageNo);
+    }
+    setViewData(areaName) 
+}
+
+// 紀錄歷史紀錄
+// 紀錄當前地區及頁數，並儲存在localstorage中
+function setHistory(areaName, pageNo){
+    var historyData = JSON.stringify({'areaName': areaName,'pageNo': pageNo});
+    history.pushState(historyData, '', '');    
+    localStorage.setItem('lastPage', historyData);
+    // console.log('setHistory-localStorage:' + localStorage.getItem('lastPage'));
+    // console.log('setHistory-historyData:' + historyData);
+}
+
+// 瀏覽器上下頁
+window.onpopstate = function(e) {
+    localStorage.setItem('lastPage', e.state);
+    var historyData = JSON.parse(e.state);
+    setViewData(historyData.areaName, historyData.pageNo);
+    console.log(e.state);
+    // console.log('setViewData-localStorage:' + localStorage.getItem('lastPage'));
+    // console.log('setViewData-historyData:' + JSON.stringify(historyData));
+}
 
 // 打開景點介紹內容
-function setViewContent(viewNo) {
-    for (var index = 0; index < nowData.length; index++) {
-        if (viewNo == nowData[index].dataNo) {
-            document.querySelector('.view-title').textContent = nowData[index].dataTitle;
-            document.querySelector('.view-img').setAttribute('src', nowData[index].dataPic);
-            document.querySelector('.view-img').setAttribute('alt', nowData[index].dataPicDesc);
-            document.querySelector('.view-content').innerHTML = replaceAll(nowData[index].dataBody,'。', '。<br />');
-            document.querySelector('.view-add').innerHTML = nowData[index].dataAddress;
-            document.querySelector('.view-tel').innerHTML = nowData[index].dataTel;
-            document.querySelector('.view-time').innerHTML = replaceAll(nowData[index].dataOpenTime,/\n/g, '<br />');
-            document.querySelector('.view-MRT').textContent = nowData[index].dataMRT;
-            document.querySelector('.view-info').innerHTML = replaceAll(nowData[index].dataInfo,'。', '。<br />');
+function showViewData(viewNo) {
+    for (var i = 0; i < nowViewData.length; i++) {
+        if (viewNo == nowViewData[i].dataNo) {
+            document.querySelector('.view-title').textContent = nowViewData[i].dataTitle;
+            document.querySelector('.view-img').setAttribute('src', nowViewData[i].dataPic);
+            document.querySelector('.view-img').setAttribute('alt', nowViewData[i].dataPicDesc);
+            document.querySelector('.view-content').innerHTML = replaceAll(nowViewData[i].dataDesc,'。', '。<br />');
+            document.querySelector('.view-add').innerHTML = nowViewData[i].dataAddress;
+            document.querySelector('.view-tel').innerHTML = nowViewData[i].dataTel;
+            document.querySelector('.view-time').innerHTML = replaceAll(nowViewData[i].dataOpenTime,/\n/g, '<br />');
+            document.querySelector('.view-MRT').textContent = nowViewData[i].dataMRT;
+            document.querySelector('.view-info').innerHTML = replaceAll(nowViewData[i].dataInfo,'。', '。<br />');
         }
     }
     document.querySelector('.modal').style.display='block';
@@ -218,5 +246,19 @@ closeModalEl.addEventListener('click', function(e){
     }
 })
 
+// 偵測行政區變更
+var selectEl = document.querySelector('.content__select');
+selectEl.addEventListener('change', selectArea, false);
+
+
+//啟動程式
+function goStart() {
+    //取得行政區資料
+    getAreaData();
+    //取得景點資料
+    getViewData();
+}
+
 // 啟動
-window.onload = getViewZip();
+window.onload = goStart();
+

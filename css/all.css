@@ -29,7 +29,7 @@ body {
     font-family: 微軟正黑體;
     font-size: 14px;
     letter-spacing: 1px;
-    font-weight: 200;
+    font-weight: 400;
     margin-top: 10px;
     color: #fff;
     background-color: #42ab9e;
@@ -86,7 +86,7 @@ body {
     top: -2px;
     text-align-last: center;
     height: 70px;
-    font-size: 30px;
+    font-size: 24px;
     border-radius: 0px;
     border: solid 1px #dbe0df;
     border-top: none;
@@ -242,7 +242,7 @@ body {
 }
 @media screen and (max-width: 690px) {
     .header {
-        width: 70%;
+        width: 75%;
     }
     .header__title {
         font-size: 26px;
