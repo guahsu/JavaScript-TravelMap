@@ -30,8 +30,13 @@ function getAreaData() {
     xhr.open('get', 'data/viewZip.json', true);
     xhr.send(null);
     xhr.onload = function() {
-        areaData = JSON.parse(xhr.responseText);        
-        createAreaSelect(); //建立行政區下拉選單
+        if (xhr.status == 200) {            
+            areaData = JSON.parse(xhr.responseText);        
+            createAreaSelect(); //建立行政區下拉選單
+            getViewData(); //取得景點資料
+        }else {
+            document.querySelector('.box-area').innerHTML = '<h2>取得資料時發生錯誤，請檢查網路狀態並重新整理：）</h2>';
+        }
     }
 }
 
@@ -45,13 +50,17 @@ function getViewData() {
     xhr.open('get', 'data/viewData.json', true);
     xhr.send(null);
     xhr.onload = function() {
-        viewData = JSON.parse(xhr.responseText);
-        //檢查LocalStorage中是否有存在最後一筆紀錄（瀏覽器重新整理判斷用）
-        var lastPage = JSON.parse(localStorage.getItem('lastPage'));
-        if (lastPage) {
-            selectArea(lastPage.areaName, lastPage.pageNo);
-        } else {
-            selectArea()
+        if (xhr.status == 200) {       
+            viewData = JSON.parse(xhr.responseText);
+            //檢查LocalStorage中是否有存在最後一筆紀錄（瀏覽器重新整理判斷用）
+            var lastPage = JSON.parse(localStorage.getItem('lastPage'));
+            if (lastPage) {
+                selectArea(lastPage.areaName, lastPage.pageNo);
+            } else {
+                selectArea()
+            }
+        }else {
+            document.querySelector('.box-area').innerHTML = '<h2>取得資料時發生錯誤，請檢查網路狀態並重新整理：）</h2>';
         }
     }
 }
@@ -311,8 +320,6 @@ function listenSelect() {
 function goStart() {
     //取得行政區資料
     getAreaData();
-    //取得景點資料
-    getViewData();
     //偵測行政區選擇框
     listenSelect();
     //偵測行政區選擇框
