@@ -31,8 +31,10 @@
 但是若有重複的className透過`querySelector('.divClass')`只會取到第一筆`BBB`的值，  
 所以就要用`querySelectorAll('.divClass')`來取得所有className是`.divClass`元素，  
 但特別要注意的的是，透過`querySelectorAll()`取得的值會被放入陣列中，  
-所以例如寫了：  
-`var data = document.querySelectorAll('.divClass').textContent;`
+所以例如寫了：
+````javascript
+var data = document.querySelectorAll('.divClass').textContent;
+````
 會得到`['BBB','CCC']`這樣的內容，要取出`BBB`就是`data[0]`！  
 
 學到這裡時，真心覺得jQuery的`$('')`真的很方便啊XD！
@@ -47,11 +49,15 @@
 **執行內容**  
 指的是要執行的項目，可以直接指定function或直接寫在裡面  
 例如：
-`document.body.addEventListner('click', SomeFunction, true);`
-`document.body.addEventListner('click', function(e) { console.log(e) }, false);`
+````javascript
+document.body.addEventListner('click', SomeFunction, true);
+document.body.addEventListner('click', function(e) { console.log(e) }, false);
+````
 要注意的是當使用第一種方法直接呼叫別的function時，不能傳參數，  
 若要傳參數只能在包一層function，例如：
-`document.body.addEventListner('click', function(e) { SomeFunction(param) }, false);`
+````javascript
+document.body.addEventListner('click', function(e) { SomeFunction(param) }, false);
+````
 
 **useCapture**  
 目前沒有使用情境，老實說並不是很了解的參數，  
@@ -65,8 +71,10 @@
 </div>
 ```
 當設定
-`document.querySelector('.child').addEventListener('click',function() { console.log('C') }), ture)`
-`document.querySelector('.father').addEventListener('click',function() { console.log('F') }), ture)`
+````javascript
+document.querySelector('.child').addEventListener('click',function() { console.log('C') }), ture)
+document.querySelector('.father').addEventListener('click',function() { console.log('F') }), ture)
+````
 會先印出F（外層），若設定為false時會先印出C（內層）  
 若father設定`false`，child設定成`ture`，則會先印`C`，反之則先印`F`  
 
@@ -186,9 +194,10 @@ window.onpopstate = function(e) {
 各種變數跟樣式命名真的是我很弱的一部份，  
 除了英文很破沒幾個單字可以拿來命名之外，  
 就是沒有一個規範可以去遵循，後來從前端電子報中看到這個BEM這個關鍵字，  
-這種命名方式是遵循Black__Element--Modifier  
-這樣的方式去命名的，  
-雖然看起來很長很亂，但其實對健忘的我來說很好找到對應元素，不過block in block的處理  及modifier的定義我沒有很充分理解，第一次使用，會再找機會參考別人的做法。
+這種命名方式是遵循Black__Element--Modifier這樣的方式去命名的，  
+雖然看起來很長很亂，但其實對健忘的我來說很好找到對應元素，  
+不過block in block的處理及modifier的定義我沒有很充分理解，  
+第一次使用，會再找機會參考別人的做法。
 
 **select變更樣式**
 
@@ -203,6 +212,6 @@ HTML的原生select修改樣式成背景透明後，在手機上的小箭頭居�
 </svg>
 ```
 且為了安全起見，也還是把select的圖標隱藏了  
-` -webkit-appearance: none;`
+` -webkit-appearance: none;`  
 然後這個我根本沒有在管瀏覽器兼容性啦XD!
 
