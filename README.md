@@ -3,7 +3,7 @@
 ![](http://www.guastudio.com//uploads/content/20170507/travelMap.png) 
 
 
-### [[連結]](http://demo.guastudio.com/jsTravelMap/)
+### [[連結]](https://guahsu.io/JavaScript-TravelMap/index.html)
 
 台北市的旅遊景點資料站，資料來源是政府資料開放平臺，  
 樣式的部分還是簡單的HTML跟CSS刻，主軸放在Javascript上，  
